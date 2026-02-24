@@ -1,0 +1,16 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nome": "Admin",
+      "email": "admin@gdk.com",
+      "senha": "123456"
+    },
+    {
+      "id": 2,
+      "nome": "teste",
+      "email": "teste@gmail.com",
+      "senha": "romerox333"
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDK · Entrar ou Cadastrar</title>
+    <!-- Fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- CSS principal -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos da página de login */
+        .login-container {
+            max-width: 500px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px -15px #000;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 30px;
+        }
+        .tab-btn.active {
+            background: #fff;
+            color: #000;
+        }
+        .tab-btn:hover:not(.active) {
+            color: #fff;
+        }
+
+        .form-container {
+            transition: opacity 0.3s ease;
+        }
+        .form-container.hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .form-group input:focus {
+            border-color: #fff;
+        }
+        .form-group input::placeholder {
+            color: #666;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 1rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        .btn-submit:hover {
+            background: #f0f0f0;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .message {
+            margin-top: 1.5rem;
+            padding: 0.8rem;
+            border-radius: 30px;
+            text-align: center;
+            font-weight: 500;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+        }
+        .message.success {
+            background: #00a86b;
+            border-color: #00cc88;
+        }
+        .message.error {
+            background: #b22222;
+            border-color: #ff4444;
+        }
+
+        @media (max-width: 600px) {
+            .login-container {
+                margin: 2rem 1rem;
+                padding: 1.5rem;
+            }
+            .tab-btn {
+                font-size: 1rem;
+                padding: 0.4rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header animate-on-load fade-slide-up">
+        <div class="logo">GDK<span class="logo-dot">.</span></div>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="contato.html">Contato</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions animate-on-load fade-in delay-2">
+            <button class="btn-icon"><i class="fas fa-search"></i></button>
+            <button class="btn-outline" onclick="window.location.href='login.html'">Entrar</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="login-container animate-on-load scale-in delay-1">
+            <div class="tabs">
+                <button class="tab-btn active" id="tabLogin">Entrar</button>
+                <button class="tab-btn" id="tabRegister">Cadastrar</button>
+            </div>
+
+            <!-- Formulário de Login -->
+            <div class="form-container" id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••">
+                </div>
+                <button class="btn-submit" id="btnLogin">Entrar</button>
+                <div class="message" id="loginMessage"></div>
+            </div>
+
+            <!-- Formulário de Cadastro -->
+            <div class="form-container hidden" id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Nome</label>
+                    <input type="text" id="registerName" placeholder="Seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">E-mail</label>
+                    <input type="email" id="registerEmail" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Senha</label>
+                    <input type="password" id="registerPassword" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirm">Confirmar senha</label>
+                    <input type="password" id="registerConfirm" placeholder="••••••••">
+                </div>
+                <button class="btn-submit" id="btnRegister">Cadastrar</button>
+                <div class="message" id="registerMessage"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer animate-on-load fade-in delay-2">
+        <div class="footer-columns">
+            <div class="footer-col">
+                <div class="footer-logo">GDK<span>.</span></div>
+                <p>Plataforma confiável para compra de cartões digitais com entrega instantânea.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Produto</h4>
+                <ul>
+                    <li><a href="catalogo.html">Catálogo</a></li>
+                    <li><a href="#">Saldo</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Termos</a></li>
+                    <li><a href="#">Privacidade</a></li>
+                    <li><a href="#">Cookies</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2025 GDK · Todos os direitos reservados</span>
+        </div>
+    </footer>
+
+<!-- Remova a linha do users.js -->
+<script src="scripts/script.js"></script>
+<script src="scripts/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDK · Contato</title>
+    <!-- Fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- CSS principal -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos da página de contato */
+        .contact-header {
+            text-align: center;
+            margin: 3rem 0 2rem;
+            padding: 0 2rem;
+        }
+        .contact-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #cccccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .contact-header p {
+            font-size: 1.2rem;
+            color: #aaa;
+        }
+
+        .contact-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 2rem 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .contact-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 30px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .contact-card:hover {
+            transform: translateY(-8px);
+            border-color: #555;
+            box-shadow: 0 20px 30px -8px #000;
+        }
+
+        .contact-icon {
+            font-size: 4rem;
+            background: rgba(255,255,255,0.05);
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 2px solid #333;
+            transition: all 0.3s;
+        }
+        .contact-card:hover .contact-icon {
+            border-color: #fff;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .contact-card .instagram { color: #E4405F; }
+        .contact-card .discord { color: #5865F2; }
+        .contact-card .telegram { color: #26A5E4; }
+
+        .contact-card h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0.5rem 0 0;
+        }
+
+        .contact-card p {
+            color: #aaa;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .contact-card .btn-link {
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 0.6rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 0.5rem;
+        }
+        .contact-card:hover .btn-link {
+            background: #fff;
+            color: #000;
+        }
+
+        @media (max-width: 600px) {
+            .contact-header h1 {
+                font-size: 2rem;
+            }
+            .contact-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header com animação -->
+    <header class="header animate-on-load fade-slide-up">
+        <div class="logo">GDK<span class="logo-dot">.</span></div>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="contato.html" class="active">Contato</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions animate-on-load fade-in delay-2">
+            <button class="btn-icon"><i class="fas fa-search"></i></button>
+            <button class="btn-outline">Entrar</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Cabeçalho da página com animações -->
+        <div class="contact-header">
+            <h1 class="animate-on-load fade-slide-up delay-1">Fale conosco</h1>
+            <p class="animate-on-load fade-slide-up delay-2">Escolha uma das opções abaixo para entrar em contato</p>
+        </div>
+
+        <!-- Cards de contato com animação em cascata -->
+        <div class="contact-grid">
+            <!-- Instagram -->
+            <a href="https://www.instagram.com/gdk_ccs/" target="_blank" rel="noopener noreferrer" class="contact-card animate-on-load scale-in delay-2">
+                <div class="contact-icon instagram">
+                    <i class="fab fa-instagram"></i>
+                </div>
+                <h3>Instagram</h3>
+                <p>Siga e envie uma DM</p>
+                <span class="btn-link">@gdk_ccs</span>
+            </a>
+
+            <!-- Discord -->
+            <a href="https://discord.gg/GemPZjPXrE" target="_blank" rel="noopener noreferrer" class="contact-card animate-on-load scale-in delay-3">
+                <div class="contact-icon discord">
+                    <i class="fab fa-discord"></i>
+                </div>
+                <h3>Discord</h3>
+                <p>Entre no nosso servidor</p>
+                <span class="btn-link">.gg/gdk</span>
+            </a>
+
+            <!-- Telegram -->
+            <a href="https://t.me/gdkccs" target="_blank" rel="noopener noreferrer" class="contact-card animate-on-load scale-in delay-4">
+                <div class="contact-icon telegram">
+                    <i class="fab fa-telegram-plane"></i>
+                </div>
+                <h3>Telegram</h3>
+                <p>Mensagem direta</p>
+                <span class="btn-link">@suporte_gdk</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer com animação -->
+    <footer class="footer animate-on-load fade-in delay-3">
+        <div class="footer-columns">
+            <div class="footer-col">
+                <div class="footer-logo">GDK<span>.</span></div>
+                <p>Plataforma confiável para compra de cartões digitais com entrega instantânea.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Produto</h4>
+                <ul>
+                    <li><a href="catalogo.html">Catálogo</a></li>
+                    <li><a href="#">Saldo</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Termos</a></li>
+                    <li><a href="#">Privacidade</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2025 GDK · Todos os direitos reservados</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="scripts/script.js"></script>
+    <script src="scripts/contato.js"></script>
+</body>
+</html>
