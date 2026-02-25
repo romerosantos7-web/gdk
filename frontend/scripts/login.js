@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const registerPassword = document.getElementById('registerPassword');
   const registerConfirm = document.getElementById('registerConfirm');
 
-  const API_URL = 'https://gdkccs.onrender.com/api';
+  const API_URL = 'https://gdk.onrender.com/api';
 
   if (sessionStorage.getItem('usuarioLogado')) {
     window.location.href = 'catalogo.html';
