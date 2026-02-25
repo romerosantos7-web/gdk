@@ -1,6 +1,4 @@
 // recarga.js
-const API_URL = 'https://gdk.onrender.com/api'; // <-- ADICIONADO
-
 document.addEventListener('DOMContentLoaded', async function() {
   const usuarioLogado = sessionStorage.getItem('usuarioLogado');
   if (!usuarioLogado) {
@@ -19,13 +17,30 @@ document.addEventListener('DOMContentLoaded', async function() {
   const infoBonus = document.getElementById('info-bonus');
   const botoesRapidos = document.querySelectorAll('.btn-valor-rapido');
   const btnContinuar = document.getElementById('btn-continuar');
+  const btnConfirmarPix = document.getElementById('btn-confirmar-pix');
+  const btnVoltar = document.getElementById('btn-voltar-etapa1');
+  const btnFechar = document.getElementById('btn-fechar-qr');
   const saldoAtualEl = document.getElementById('saldo-atual');
 
+  // Etapas
+  const etapa1 = document.getElementById('etapa1');
+  const etapa2 = document.getElementById('etapa2');
+  const etapa3 = document.getElementById('etapa3');
+  const indicadores = {
+    1: document.getElementById('etapa-ind1'),
+    2: document.getElementById('etapa-ind2'),
+    3: document.getElementById('etapa-ind3')
+  };
+  const loadingOverlay = document.getElementById('loading-overlay');
+
+  const API_URL = '/api'; // relativo (funciona no mesmo domínio)
+
   let saldoAtual = 0;
+  let valorSelecionado = 108;
 
   // Buscar saldo atual do backend
   try {
-    const response = await fetch(`${API_URL}/saldo/${userId}`); // <-- MODIFICADO
+    const response = await fetch(`${API_URL}/saldo/${userId}`);
     const data = await response.json();
     if (data.saldo !== undefined) {
       saldoAtual = data.saldo;
@@ -39,6 +54,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   function atualizarValor(valor) {
     valor = parseFloat(valor) || 0;
+    valorSelecionado = valor;
     const bonus = valor * 0.10;
     const valorComBonus = valor + bonus;
     const saldoFinal = saldoAtual + valorComBonus;
@@ -46,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     valorExibido.textContent = `R$ ${valor.toFixed(2)}`;
     bonusExibido.textContent = `Bônus de 10%: R$ ${bonus.toFixed(2)}`;
     saldoApos.textContent = `R$ ${saldoFinal.toFixed(2)}`;
-    infoBonus.textContent = `+ R$ ${valor.toFixed(2)} + R$ ${bonus.toFixed(2)} bônus [10%]`;
+    infoBonus.textContent = `+ R$ ${valor.toFixed(2)} + R$ ${bonus.toFixed(2)} bônus`;
 
     botoesRapidos.forEach(btn => {
       btn.classList.remove('selecionado');
@@ -73,83 +89,107 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Inicializa com valor padrão (108)
   atualizarValor(108);
 
-  // Botão Continuar
-  btnContinuar.addEventListener('click', async function() {
+  // Funções de controle de etapas
+  function mostrarEtapa(etapa) {
+    // Oculta todas
+    etapa1.style.display = 'none';
+    etapa2.classList.remove('visivel');
+    etapa3.classList.remove('visivel');
+
+    // Mostra a desejada
+    if (etapa === 1) {
+      etapa1.style.display = 'block';
+      etapa2.classList.remove('visivel');
+      etapa3.classList.remove('visivel');
+      indicadores[1].classList.add('ativa');
+      indicadores[2].classList.remove('ativa');
+      indicadores[3].classList.remove('ativa');
+    } else if (etapa === 2) {
+      etapa2.style.display = 'block';
+      setTimeout(() => etapa2.classList.add('visivel'), 10); // para animação
+      indicadores[1].classList.remove('ativa');
+      indicadores[2].classList.add('ativa');
+      indicadores[3].classList.remove('ativa');
+    } else if (etapa === 3) {
+      etapa3.style.display = 'block';
+      setTimeout(() => etapa3.classList.add('visivel'), 10);
+      indicadores[1].classList.remove('ativa');
+      indicadores[2].classList.remove('ativa');
+      indicadores[3].classList.add('ativa');
+    }
+  }
+
+  // Botão Continuar (etapa 1 -> 2)
+  btnContinuar.addEventListener('click', function() {
     const valor = parseFloat(slider.value);
     if (valor < 20 || valor > 200) {
       alert('Valor fora do limite permitido.');
       return;
     }
+    // Atualiza o valor na etapa 2
+    document.getElementById('valor-confirmacao').textContent = `R$ ${valor.toFixed(2)}`;
+    mostrarEtapa(2);
+  });
 
-    const payerName = usuario.nome || 'Cliente GDK';
-    const payerDocument = prompt('Informe seu CPF (apenas números) para gerar o PIX:');
-    if (!payerDocument || payerDocument.length !== 11) {
-      alert('CPF inválido.');
-      return;
-    }
+  // Botão Voltar (etapa 2 -> 1)
+  btnVoltar.addEventListener('click', function() {
+    mostrarEtapa(1);
+  });
+
+  // Botão Confirmar PIX (etapa 2 -> loading -> etapa 3)
+  btnConfirmarPix.addEventListener('click', async function() {
+    const valor = parseFloat(slider.value);
+
+    // Mostra loading
+    loadingOverlay.classList.add('ativo');
 
     try {
-      const response = await fetch(`${API_URL}/criar-pix`, { // <-- MODIFICADO
+      const response = await fetch(`${API_URL}/criar-pix`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId,
           amount: valor,
-          payerName,
-          payerDocument,
+          payerName: usuario.nome || 'Cliente GDK',
+          payerDocument: '00000000000', // CPF fixo ou poderia vir do perfil
           description: `Recarga GDK - ${usuario.email}`
         })
       });
+
       const data = await response.json();
+      loadingOverlay.classList.remove('ativo');
+
       if (data.success) {
-        exibirQRCode(data);
+        // Preenche a etapa 3 com QR Code e aviso
+        const qrContainer = document.getElementById('qr-container');
+        qrContainer.innerHTML = `
+          <h2 style="margin-bottom:1.5rem;">Pagamento PIX</h2>
+          <img src="${data.qrCodeBase64}" class="qr-code-img">
+          <p style="color:#aaa; margin-bottom:0.5rem;">Escaneie ou copie o código:</p>
+          <div class="pix-code">
+            <code style="color:#fff;">${data.copyPaste}</code>
+          </div>
+          <div class="aviso">
+            <i class="fas fa-exclamation-triangle"></i> 
+            Esta transação não pode ser cancelada. O pagamento deve ser realizado para evitar bloqueios.
+            Muitas requisições sem prosseguir podem resultar em banimento da conta.
+          </div>
+        `;
+        mostrarEtapa(3);
       } else {
         alert('Erro ao gerar PIX: ' + (data.error || 'Tente novamente.'));
       }
     } catch (error) {
+      loadingOverlay.classList.remove('ativo');
       alert('Erro de conexão com o servidor.');
     }
   });
-});
 
-function exibirQRCode(dados) {
-  // Cria um modal simples ou exibe na própria página
-  const overlay = document.createElement('div');
-  overlay.style.position = 'fixed';
-  overlay.style.top = '0';
-  overlay.style.left = '0';
-  overlay.style.width = '100%';
-  overlay.style.height = '100%';
-  overlay.style.backgroundColor = 'rgba(0,0,0,0.9)';
-  overlay.style.display = 'flex';
-  overlay.style.alignItems = 'center';
-  overlay.style.justifyContent = 'center';
-  overlay.style.zIndex = '9999';
-
-  const modal = document.createElement('div');
-  modal.style.background = '#111';
-  modal.style.padding = '2rem';
-  modal.style.borderRadius = '40px';
-  modal.style.maxWidth = '400px';
-  modal.style.width = '90%';
-  modal.style.border = '1px solid #333';
-  modal.style.color = '#fff';
-  modal.style.textAlign = 'center';
-
-  modal.innerHTML = `
-    <h2 style="margin-bottom: 1.5rem;">Pagamento PIX</h2>
-    <img src="${dados.qrCodeBase64}" style="width: 250px; height: 250px; margin-bottom: 1.5rem; border-radius: 20px;">
-    <p style="color: #aaa; margin-bottom: 0.5rem;">Escaneie o QR Code ou copie o código:</p>
-    <div style="background: #222; padding: 1rem; border-radius: 30px; margin-bottom: 1rem; word-break: break-all;">
-      <code style="color: #fff;">${dados.copyPaste}</code>
-    </div>
-    <button id="fecharQRCode" style="background: #fff; color: #000; border: none; padding: 0.8rem 2rem; border-radius: 40px; font-weight: 600; cursor: pointer;">Fechar</button>
-  `;
-
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-
-  document.getElementById('fecharQRCode').addEventListener('click', () => {
-    document.body.removeChild(overlay);
+  // Botão Fechar (etapa 3 -> etapa 1)
+  btnFechar.addEventListener('click', function() {
+    mostrarEtapa(1);
   });
-}
+
+  // Inicia na etapa 1
+  mostrarEtapa(1);
+});
