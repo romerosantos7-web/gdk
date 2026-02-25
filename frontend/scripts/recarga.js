@@ -102,32 +102,37 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Inicializa com valor padrão
   atualizarValor(108);
 
+  // ========== FUNÇÃO MODIFICADA ==========
   function mostrarEtapa(etapa) {
     if (!etapa1 || !etapa2 || !etapa3 || !indicadores[1] || !indicadores[2] || !indicadores[3]) return;
 
+    // Esconde todas as etapas forçando display none
     etapa1.style.display = 'none';
+    etapa2.style.display = 'none';
+    etapa3.style.display = 'none';
     etapa2.classList.remove('visivel');
     etapa3.classList.remove('visivel');
 
+    // Reseta indicadores
+    indicadores[1].classList.remove('ativa');
+    indicadores[2].classList.remove('ativa');
+    indicadores[3].classList.remove('ativa');
+
+    // Mostra a etapa selecionada
     if (etapa === 1) {
       etapa1.style.display = 'block';
       indicadores[1].classList.add('ativa');
-      indicadores[2].classList.remove('ativa');
-      indicadores[3].classList.remove('ativa');
     } else if (etapa === 2) {
       etapa2.style.display = 'block';
       setTimeout(() => etapa2.classList.add('visivel'), 10);
-      indicadores[1].classList.remove('ativa');
       indicadores[2].classList.add('ativa');
-      indicadores[3].classList.remove('ativa');
     } else if (etapa === 3) {
       etapa3.style.display = 'block';
       setTimeout(() => etapa3.classList.add('visivel'), 10);
-      indicadores[1].classList.remove('ativa');
-      indicadores[2].classList.remove('ativa');
       indicadores[3].classList.add('ativa');
     }
   }
+  // ========================================
 
   btnContinuar.addEventListener('click', function() {
     const valor = parseFloat(slider.value);
