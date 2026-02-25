@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   };
   const loadingOverlay = document.getElementById('loading-overlay');
 
-  const API_URL = '/api'; // relativo (funciona no mesmo domínio)
+  const API_URL = 'https://gdk.onrender.com/api';
 
   let saldoAtual = 0;
   let valorSelecionado = 108;
@@ -193,3 +193,4 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Inicia na etapa 1
   mostrarEtapa(1);
 });
+
