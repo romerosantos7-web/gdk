@@ -33,12 +33,13 @@ document.addEventListener('DOMContentLoaded', async function() {
   };
   const loadingOverlay = document.getElementById('loading-overlay');
 
+  // URL da API corrigida (backend no Render)
   const API_URL = 'https://gdk.onrender.com/api';
 
   let saldoAtual = 0;
   let valorSelecionado = 108;
 
-  // Buscar saldo atual do backend
+  // Buscar saldo atual
   try {
     const response = await fetch(`${API_URL}/saldo/${userId}`);
     const data = await response.json();
@@ -48,7 +49,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   } catch (error) {
     console.error('Erro ao buscar saldo:', error);
-    saldoAtual = 0;
     saldoAtualEl.textContent = `R$ 0,00`;
   }
 
@@ -86,27 +86,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  // Inicializa com valor padrão (108)
   atualizarValor(108);
 
   // Funções de controle de etapas
   function mostrarEtapa(etapa) {
-    // Oculta todas
     etapa1.style.display = 'none';
     etapa2.classList.remove('visivel');
     etapa3.classList.remove('visivel');
 
-    // Mostra a desejada
     if (etapa === 1) {
       etapa1.style.display = 'block';
-      etapa2.classList.remove('visivel');
-      etapa3.classList.remove('visivel');
       indicadores[1].classList.add('ativa');
       indicadores[2].classList.remove('ativa');
       indicadores[3].classList.remove('ativa');
     } else if (etapa === 2) {
       etapa2.style.display = 'block';
-      setTimeout(() => etapa2.classList.add('visivel'), 10); // para animação
+      setTimeout(() => etapa2.classList.add('visivel'), 10);
       indicadores[1].classList.remove('ativa');
       indicadores[2].classList.add('ativa');
       indicadores[3].classList.remove('ativa');
@@ -119,28 +114,23 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   }
 
-  // Botão Continuar (etapa 1 -> 2)
   btnContinuar.addEventListener('click', function() {
     const valor = parseFloat(slider.value);
     if (valor < 20 || valor > 200) {
       alert('Valor fora do limite permitido.');
       return;
     }
-    // Atualiza o valor na etapa 2
     document.getElementById('valor-confirmacao').textContent = `R$ ${valor.toFixed(2)}`;
     mostrarEtapa(2);
   });
 
-  // Botão Voltar (etapa 2 -> 1)
   btnVoltar.addEventListener('click', function() {
     mostrarEtapa(1);
   });
 
-  // Botão Confirmar PIX (etapa 2 -> loading -> etapa 3)
   btnConfirmarPix.addEventListener('click', async function() {
     const valor = parseFloat(slider.value);
 
-    // Mostra loading
     loadingOverlay.classList.add('ativo');
 
     try {
@@ -151,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           userId,
           amount: valor,
           payerName: usuario.nome || 'Cliente GDK',
-          payerDocument: '00000000000', // CPF fixo ou poderia vir do perfil
+          payerDocument: '00000000000', // CPF fictício
           description: `Recarga GDK - ${usuario.email}`
         })
       });
@@ -160,7 +150,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       loadingOverlay.classList.remove('ativo');
 
       if (data.success) {
-        // Preenche a etapa 3 com QR Code e aviso
         const qrContainer = document.getElementById('qr-container');
         qrContainer.innerHTML = `
           <h2 style="margin-bottom:1.5rem;">Pagamento PIX</h2>
@@ -185,12 +174,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // Botão Fechar (etapa 3 -> etapa 1)
   btnFechar.addEventListener('click', function() {
     mostrarEtapa(1);
   });
 
-  // Inicia na etapa 1
   mostrarEtapa(1);
 });
-
