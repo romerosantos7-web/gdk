@@ -13,7 +13,7 @@
     <!-- CSS principal -->
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Estilos específicos da página de recarga */
+        /* Estilos específicos da página de recarga (incluindo etapas e loading) */
         .recarga-container {
             max-width: 700px;
             margin: 2rem auto;
@@ -32,7 +32,7 @@
             font-size: 2.5rem;
             font-weight: 700;
             background: linear-gradient(to right, #ffffff, #cccccc);
-            background-clip: text;
+            -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
         }
@@ -41,9 +41,40 @@
             font-size: 1.1rem;
         }
 
-        .saldo-cards {
+        .etapas {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+        .etapa {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+        }
+        .etapa.ativa {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+        .etapa.ativa i {
+            color: #000;
+        }
+        .etapa i {
+            color: #00cc88;
+        }
+        .separador {
+            color: #333;
+        }
+
+        .saldo-cards {
+            display: flex;
             gap: 1.5rem;
             margin-bottom: 2.5rem;
         }
@@ -61,7 +92,6 @@
             font-weight: 400;
             margin-bottom: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
         .saldo-card .valor {
             font-size: 2.2rem;
@@ -69,45 +99,19 @@
             color: #fff;
             margin-bottom: 0.3rem;
         }
-        .saldo-card .info {
-            color: #666;
-            font-size: 0.9rem;
-        }
         .saldo-card.destaque .valor {
             color: #00cc88;
         }
 
-        .etapas {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            color: #aaa;
-            font-size: 0.95rem;
+        /* Etapa 1: Escolha de valor */
+        #etapa1 {
+            transition: opacity 0.3s ease;
         }
-        .etapas .etapa {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .etapas .etapa i {
-            color: #00cc88;
-        }
-        .etapas .separador {
-            color: #333;
-        }
-
         .selecao-valor h2 {
             font-size: 1.8rem;
-            font-weight: 600;
             color: #fff;
             margin-bottom: 1rem;
         }
-        .selecao-valor h2 i {
-            color: #f1c40f;
-            margin-right: 0.5rem;
-        }
-
         .valor-selecionado-info {
             background: #1a1a1a;
             border: 1px solid #333;
@@ -118,34 +122,16 @@
             justify-content: space-between;
             align-items: center;
         }
-        .valor-selecionado-info .label {
-            color: #aaa;
-        }
         .valor-selecionado-info .valor {
             font-size: 2rem;
             font-weight: 700;
             color: #fff;
         }
-        .valor-selecionado-info .bonus {
-            background: #00cc88;
-            color: #000;
-            padding: 0.3rem 1rem;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
         .slider-container {
             margin: 2rem 0;
         }
-        .slider-container label {
-            display: block;
-            color: #fff;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
         .slider {
-            appearance: none;
+            -webkit-appearance: none;
             width: 100%;
             height: 8px;
             background: #333;
@@ -154,69 +140,37 @@
         }
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
             width: 25px;
             height: 25px;
             background: #fff;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-        .slider::-moz-range-thumb {
-            width: 25px;
-            height: 25px;
-            background: #fff;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .slider-values {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 0.5rem;
-            color: #aaa;
-        }
-
-        .valores-rapidos {
-            margin: 2rem 0;
-        }
-        .valores-rapidos h3 {
-            color: #fff;
-            font-weight: 600;
-            margin-bottom: 1rem;
         }
         .botoes-rapidos {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
             gap: 0.8rem;
+            margin: 1rem 0;
         }
         .btn-valor-rapido {
             background: #222;
             border: 1px solid #444;
             color: #fff;
-            padding: 0.8rem 0.5rem;
+            padding: 0.8rem;
             border-radius: 30px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .btn-valor-rapido:hover {
-            background: #333;
-            border-color: #666;
-        }
         .btn-valor-rapido.selecionado {
             background: #fff;
             color: #000;
-            border-color: #fff;
         }
-
         .limites {
             text-align: center;
             color: #aaa;
             margin: 2rem 0 1.5rem;
-            font-size: 0.95rem;
         }
-
         .btn-continuar {
             width: 100%;
             background: #fff;
@@ -236,7 +190,153 @@
         .btn-continuar:hover {
             background: #f0f0f0;
             transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        /* Etapa 2: Confirmação do método */
+        #etapa2 {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #etapa2.visivel {
+            display: block;
+            opacity: 1;
+        }
+        .confirmacao-info {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 30px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .confirmacao-info .valor-destaque {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .metodos-pagamento {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .metodo-pix {
+            background: #222;
+            border: 2px solid #00cc88;
+            border-radius: 30px;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #fff;
+            font-weight: 600;
+            width: fit-content;
+        }
+        .metodo-pix i {
+            font-size: 2rem;
+            color: #00cc88;
+        }
+        .btn-confirmar {
+            width: 100%;
+            background: #00cc88;
+            color: #000;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-confirmar:hover {
+            background: #00b377;
+            transform: scale(1.02);
+        }
+        .btn-voltar {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 0.8rem;
+            border-radius: 40px;
+            margin-top: 1rem;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Etapa 3: QR Code */
+        #etapa3 {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #etapa3.visivel {
+            display: block;
+            opacity: 1;
+        }
+        .qr-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .qr-code-img {
+            width: 250px;
+            height: 250px;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+        .pix-code {
+            background: #222;
+            padding: 1rem;
+            border-radius: 30px;
+            margin-bottom: 1rem;
+            word-break: break-all;
+        }
+        .aviso {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff4444;
+            border-radius: 30px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #ff8888;
+            font-size: 0.9rem;
+        }
+        .btn-fechar {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .loading-overlay.ativo {
+            display: flex;
+        }
+        .spinner {
+            border: 4px solid #333;
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 600px) {
@@ -246,15 +346,6 @@
             }
             .saldo-cards {
                 flex-direction: column;
-            }
-            .etapas {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-            .valor-selecionado-info {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
             }
         }
     </style>
@@ -283,112 +374,96 @@
                 <p>Siga os passos abaixo para adicionar créditos à sua conta</p>
             </div>
 
-            <div class="etapas">
-                <div class="etapa"><i class="fas fa-check-circle"></i> 1. Valor</div>
+            <!-- Indicador de etapas -->
+            <div class="etapas" id="indicador-etapas">
+                <div class="etapa ativa" id="etapa-ind1"><i class="fas fa-check-circle"></i> 1. Valor</div>
                 <span class="separador">→</span>
-                <div class="etapa">2. Método</div>
+                <div class="etapa" id="etapa-ind2">2. Pagamento</div>
                 <span class="separador">→</span>
-                <div class="etapa">3. Confirmação</div>
+                <div class="etapa" id="etapa-ind3">3. QR Code</div>
             </div>
 
+            <!-- Cards de saldo (sempre visíveis) -->
             <div class="saldo-cards">
                 <div class="saldo-card">
                     <h3>Saldo Atual</h3>
-                    <div class="valor" id="saldo-atual">R$ 34,51</div>
-                    <div class="info">Disponível na conta</div>
+                    <div class="valor" id="saldo-atual">R$ 0,00</div>
                 </div>
                 <div class="saldo-card destaque">
                     <h3>Saldo Após Recarga</h3>
-                    <div class="valor" id="saldo-apos">R$ 153,31</div>
-                    <div class="info" id="info-bonus">+ R$ 106,00 + R$ 10,80 bônus [10%]</div>
+                    <div class="valor" id="saldo-apos">R$ 0,00</div>
+                    <div class="info" id="info-bonus"></div>
                 </div>
             </div>
 
-            <div class="selecao-valor">
-                <h2><i class="fas fa-coins"></i> Etapa 1: Escolha o valor</h2>
-                <p class="descricao">Selecione quanto deseja recarregar</p>
-
-                <div class="valor-selecionado-info">
-                    <span class="label">Valor selecionado</span>
-                    <span class="valor" id="valor-exibido">R$ 108,00</span>
-                    <span class="bonus" id="bonus-exibido">Bônus de 10%: ativo!</span>
+            <!-- ETAPA 1: Escolha do valor -->
+            <div id="etapa1">
+                <div class="selecao-valor">
+                    <h2>Escolha o valor</h2>
+                    <div class="valor-selecionado-info">
+                        <span>Valor selecionado</span>
+                        <span class="valor" id="valor-exibido">R$ 108,00</span>
+                        <span class="bonus" id="bonus-exibido">Bônus 10%</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="valor-slider" class="slider" min="20" max="200" value="108" step="1">
+                    </div>
+                    <div class="valores-rapidos">
+                        <h3>Valores Rápidos</h3>
+                        <div class="botoes-rapidos">
+                            <button class="btn-valor-rapido" data-valor="20">R$20</button>
+                            <button class="btn-valor-rapido" data-valor="50">R$50</button>
+                            <button class="btn-valor-rapido" data-valor="100">R$100</button>
+                            <button class="btn-valor-rapido" data-valor="150">R$150</button>
+                            <button class="btn-valor-rapido" data-valor="200">R$200</button>
+                        </div>
+                    </div>
+                    <div class="limites">
+                        <i class="fas fa-info-circle"></i> Mínimo: R$20 • Máximo: R$200
+                    </div>
+                    <button class="btn-continuar" id="btn-continuar">
+                        Continuar <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
+            </div>
 
-                <!-- Slider -->
-                <div class="slider-container">
-                    <label for="valor-slider">Ajuste o valor (R$20 - R$200)</label>
-                    <input type="range" id="valor-slider" class="slider" min="20" max="200" value="108" step="1">
-                    <div class="slider-values">
-                        <span>R$ 20</span>
-                        <span>R$ 200</span>
+            <!-- ETAPA 2: Confirmação do método de pagamento -->
+            <div id="etapa2">
+                <div class="confirmacao-info">
+                    <p>Você está recarregando</p>
+                    <div class="valor-destaque" id="valor-confirmacao">R$ 108,00</div>
+                    <p>+ bônus de 10%</p>
+                </div>
+                <div class="metodos-pagamento">
+                    <div class="metodo-pix">
+                        <i class="fab fa-pix"></i>
+                        <span>PIX</span>
                     </div>
                 </div>
-
-                <!-- Valores rápidos -->
-                <div class="valores-rapidos">
-                    <h3>Valores Rápidos</h3>
-                    <div class="botoes-rapidos">
-                        <button class="btn-valor-rapido" data-valor="20">R$ 20</button>
-                        <button class="btn-valor-rapido" data-valor="25">R$ 25</button>
-                        <button class="btn-valor-rapido" data-valor="50">R$ 50</button>
-                        <button class="btn-valor-rapido" data-valor="100">R$ 100</button>
-                        <button class="btn-valor-rapido" data-valor="150">R$ 150</button>
-                        <button class="btn-valor-rapido" data-valor="200">R$ 200</button>
-                    </div>
-                </div>
-
-                <div class="limites">
-                    <i class="fas fa-info-circle"></i> Mínimo: R$ 20 • Máximo: R$ 200
-                </div>
-
-                <button class="btn-continuar" id="btn-continuar">
-                    Continuar <i class="fas fa-arrow-right"></i>
+                <button class="btn-confirmar" id="btn-confirmar-pix">
+                    <i class="fab fa-pix"></i> Confirmar e gerar PIX
                 </button>
+                <button class="btn-voltar" id="btn-voltar-etapa1">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+            </div>
+
+            <!-- ETAPA 3: Exibição do QR Code -->
+            <div id="etapa3">
+                <div class="qr-container" id="qr-container">
+                    <!-- preenchido por JS -->
+                </div>
+                <button class="btn-fechar" id="btn-fechar-qr">Fechar</button>
             </div>
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="footer-columns">
-            <div class="footer-col">
-                <div class="footer-logo">GDK<span>.</span></div>
-                <p>Plataforma confiável para compra de cartões digitais com entrega instantânea.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fab fa-x-twitter"></i></a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h4>Produto</h4>
-                <ul>
-                    <li><a href="catalogo.html">Catálogo</a></li>
-                    <li><a href="recarga.html">Recarga</a></li>
-                    <li><a href="#">FAQ</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Legal</h4>
-                <ul>
-                    <li><a href="termos.html">Termos</a></li>
-                    <li><a href="#">Privacidade</a></li>
-                    <li><a href="#">Cookies</a></li>
-                </ul>
-            </div>
-            <div class="footer-col newsletter">
-                <h4>Receba novidades</h4>
-                <form id="newsletter-form">
-                    <input type="email" placeholder="Seu melhor e-mail" required>
-                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
-                </form>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <span>© 2025 GDK · Todos os direitos reservados</span>
-        </div>
-    </footer>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
 
-    <!-- Scripts -->
+    <footer class="footer"><!-- mesmo footer --></footer>
     <script src="scripts/script.js"></script>
     <script src="scripts/recarga.js"></script>
 </body>
