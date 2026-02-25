@@ -4,13 +4,15 @@
       "id": 1,
       "nome": "Admin",
       "email": "admin@gdk.com",
-      "senha": "123456"
+      "senha": "123456",
+      "saldo": "34.51"
     },
     {
       "id": 2,
       "nome": "teste",
       "email": "teste@gmail.com",
-      "senha": "romerox333"
+      "senha": "romerox333",
+      "saldo": "34.51"
     }
   ]
 }

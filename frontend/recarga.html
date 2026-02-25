@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDK · Recarregar Saldo</title>
+    <!-- Fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- CSS principal -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos da página de recarga */
+        .recarga-container {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px -15px #000;
+        }
+
+        .recarga-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .recarga-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #cccccc);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .recarga-header p {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+
+        .saldo-cards {
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .saldo-card {
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 30px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .saldo-card h3 {
+            color: #aaa;
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .saldo-card .valor {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.3rem;
+        }
+        .saldo-card .info {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .saldo-card.destaque .valor {
+            color: #00cc88;
+        }
+
+        .etapas {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+        .etapas .etapa {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .etapas .etapa i {
+            color: #00cc88;
+        }
+        .etapas .separador {
+            color: #333;
+        }
+
+        .selecao-valor h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+        .selecao-valor h2 i {
+            color: #f1c40f;
+            margin-right: 0.5rem;
+        }
+
+        .valor-selecionado-info {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 30px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .valor-selecionado-info .label {
+            color: #aaa;
+        }
+        .valor-selecionado-info .valor {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .valor-selecionado-info .bonus {
+            background: #00cc88;
+            color: #000;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .slider-container {
+            margin: 2rem 0;
+        }
+        .slider-container label {
+            display: block;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .slider {
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 10px;
+            outline: none;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            color: #aaa;
+        }
+
+        .valores-rapidos {
+            margin: 2rem 0;
+        }
+        .valores-rapidos h3 {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .botoes-rapidos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 0.8rem;
+        }
+        .btn-valor-rapido {
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 0.8rem 0.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-valor-rapido:hover {
+            background: #333;
+            border-color: #666;
+        }
+        .btn-valor-rapido.selecionado {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        .limites {
+            text-align: center;
+            color: #aaa;
+            margin: 2rem 0 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-continuar {
+            width: 100%;
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-continuar:hover {
+            background: #f0f0f0;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 600px) {
+            .recarga-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            .saldo-cards {
+                flex-direction: column;
+            }
+            .etapas {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .valor-selecionado-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header animate-on-load fade-slide-up">
+        <div class="logo">GDK<span class="logo-dot">.</span></div>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="contato.html">Contato</a></li>
+                <li><a href="termos.html">Termos</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <button class="btn-icon"><i class="fas fa-search"></i></button>
+            <div id="user-area"></div>
+        </div>
+    </header>
+
+    <main class="page-open">
+        <div class="recarga-container">
+            <div class="recarga-header">
+                <h1><i class="fas fa-coins"></i> Recarregar Saldo</h1>
+                <p>Siga os passos abaixo para adicionar créditos à sua conta</p>
+            </div>
+
+            <div class="etapas">
+                <div class="etapa"><i class="fas fa-check-circle"></i> 1. Valor</div>
+                <span class="separador">→</span>
+                <div class="etapa">2. Método</div>
+                <span class="separador">→</span>
+                <div class="etapa">3. Confirmação</div>
+            </div>
+
+            <div class="saldo-cards">
+                <div class="saldo-card">
+                    <h3>Saldo Atual</h3>
+                    <div class="valor" id="saldo-atual">R$ 34,51</div>
+                    <div class="info">Disponível na conta</div>
+                </div>
+                <div class="saldo-card destaque">
+                    <h3>Saldo Após Recarga</h3>
+                    <div class="valor" id="saldo-apos">R$ 153,31</div>
+                    <div class="info" id="info-bonus">+ R$ 106,00 + R$ 10,80 bônus [10%]</div>
+                </div>
+            </div>
+
+            <div class="selecao-valor">
+                <h2><i class="fas fa-coins"></i> Etapa 1: Escolha o valor</h2>
+                <p class="descricao">Selecione quanto deseja recarregar</p>
+
+                <div class="valor-selecionado-info">
+                    <span class="label">Valor selecionado</span>
+                    <span class="valor" id="valor-exibido">R$ 108,00</span>
+                    <span class="bonus" id="bonus-exibido">Bônus de 10%: ativo!</span>
+                </div>
+
+                <!-- Slider -->
+                <div class="slider-container">
+                    <label for="valor-slider">Ajuste o valor (R$20 - R$200)</label>
+                    <input type="range" id="valor-slider" class="slider" min="20" max="200" value="108" step="1">
+                    <div class="slider-values">
+                        <span>R$ 20</span>
+                        <span>R$ 200</span>
+                    </div>
+                </div>
+
+                <!-- Valores rápidos -->
+                <div class="valores-rapidos">
+                    <h3>Valores Rápidos</h3>
+                    <div class="botoes-rapidos">
+                        <button class="btn-valor-rapido" data-valor="20">R$ 20</button>
+                        <button class="btn-valor-rapido" data-valor="25">R$ 25</button>
+                        <button class="btn-valor-rapido" data-valor="50">R$ 50</button>
+                        <button class="btn-valor-rapido" data-valor="100">R$ 100</button>
+                        <button class="btn-valor-rapido" data-valor="150">R$ 150</button>
+                        <button class="btn-valor-rapido" data-valor="200">R$ 200</button>
+                    </div>
+                </div>
+
+                <div class="limites">
+                    <i class="fas fa-info-circle"></i> Mínimo: R$ 20 • Máximo: R$ 200
+                </div>
+
+                <button class="btn-continuar" id="btn-continuar">
+                    Continuar <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-columns">
+            <div class="footer-col">
+                <div class="footer-logo">GDK<span>.</span></div>
+                <p>Plataforma confiável para compra de cartões digitais com entrega instantânea.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Produto</h4>
+                <ul>
+                    <li><a href="catalogo.html">Catálogo</a></li>
+                    <li><a href="recarga.html">Recarga</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="termos.html">Termos</a></li>
+                    <li><a href="#">Privacidade</a></li>
+                    <li><a href="#">Cookies</a></li>
+                </ul>
+            </div>
+            <div class="footer-col newsletter">
+                <h4>Receba novidades</h4>
+                <form id="newsletter-form">
+                    <input type="email" placeholder="Seu melhor e-mail" required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2025 GDK · Todos os direitos reservados</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="scripts/script.js"></script>
+    <script src="scripts/recarga.js"></script>
+</body>
+</html>

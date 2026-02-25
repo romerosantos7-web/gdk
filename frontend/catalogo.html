@@ -205,21 +205,30 @@
     </style>
 </head>
 <body>
+    <script>
+    (function() {
+        // Verifica se o usuário está logado (presença de sessionStorage)
+        if (!sessionStorage.getItem('usuarioLogado')) {
+            // Redireciona para a página de login
+            window.location.href = 'login.html';
+        }
+    })();
+</script>
     <!-- Header com animação de entrada -->
-    <header class="header animate-on-load fade-slide-up">
-        <div class="logo">GDK<span class="logo-dot">.</span></div>
-        <nav class="nav-menu">
-            <ul>
-                <li><a href="index.html">Início</a></li>
-                <li><a href="catalogo.html" class="active">Catálogo</a></li>
-                <li><a href="contato.html">Contato</a></li>
-            </ul>
-        </nav>
-        <div class="header-actions animate-on-load fade-in delay-2">
-            <button class="btn-icon"><i class="fas fa-search"></i></button>
-            <button class="btn-outline">Entrar</button>
-        </div>
-    </header>
+<header class="header animate-on-load fade-slide-up">
+    <div class="logo">GDK<span class="logo-dot">.</span></div>
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="catalogo.html">Catálogo</a></li>
+            <li><a href="contato.html">Contato</a></li>
+        </ul>
+    </nav>
+<div class="header-actions">
+    <button class="btn-icon"><i class="fas fa-search"></i></button>
+    <div id="user-area"></div>
+</div>
+</header>
 
     <main>
         <!-- Cabeçalho do catálogo com animações em cascata -->
