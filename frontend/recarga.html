@@ -426,6 +426,33 @@
                 gap: 1rem;
             }
         }
+
+        /* Ajuste para o QR Code não criar espaços extras */
+#etapa3 {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    min-height: 0; /* remove altura mínima */
+    padding: 0;
+}
+
+#etapa3.visivel {
+    display: block;
+    opacity: 1;
+}
+
+.qr-container {
+    margin: 0 auto;
+    padding: 0;
+    text-align: center;
+}
+
+.qr-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 1rem;
+}
     </style>
 </head>
 <body>
@@ -600,3 +627,4 @@
     <script src="scripts/recarga.js"></script>
 </body>
 </html>
+
