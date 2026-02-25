@@ -1,4 +1,4 @@
-// recarga.js
+// recarga.js - Versão com tratamento numérico seguro
 document.addEventListener('DOMContentLoaded', async function() {
   const usuarioLogado = sessionStorage.getItem('usuarioLogado');
   if (!usuarioLogado) {
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   const usuario = JSON.parse(usuarioLogado);
   const userId = usuario.id;
 
-  // Elementos da UI
+  // Elementos da UI (com verificação)
   const slider = document.getElementById('valor-slider');
   const valorExibido = document.getElementById('valor-exibido');
   const bonusExibido = document.getElementById('bonus-exibido');
@@ -21,8 +21,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   const btnVoltar = document.getElementById('btn-voltar-etapa1');
   const btnFechar = document.getElementById('btn-fechar-qr');
   const saldoAtualEl = document.getElementById('saldo-atual');
-
-  // Etapas
   const etapa1 = document.getElementById('etapa1');
   const etapa2 = document.getElementById('etapa2');
   const etapa3 = document.getElementById('etapa3');
@@ -32,53 +30,68 @@ document.addEventListener('DOMContentLoaded', async function() {
     3: document.getElementById('etapa-ind3')
   };
   const loadingOverlay = document.getElementById('loading-overlay');
+  const qrContainer = document.getElementById('qr-container');
+  const valorConfirmacao = document.getElementById('valor-confirmacao');
 
-  // URL da API corrigida (backend no Render)
+  // Verificação de elementos críticos
+  if (!slider || !btnContinuar || !etapa1 || !etapa2 || !etapa3 || !valorConfirmacao) {
+    console.error('Elementos críticos não encontrados no HTML.');
+    alert('Erro de carregamento da página. Atualize ou contate o suporte.');
+    return;
+  }
+
   const API_URL = 'https://gdk.onrender.com/api';
-
-  let saldoAtual = 0;
-  let valorSelecionado = 108;
+  let saldoAtual = 0; // sempre número
 
   // Buscar saldo atual
   try {
     const response = await fetch(`${API_URL}/saldo/${userId}`);
     const data = await response.json();
-    if (data.saldo !== undefined) {
+    console.log('Resposta da API /saldo:', data); // para debug
+    // Garantir que seja número
+    if (data && typeof data.saldo === 'number') {
       saldoAtual = data.saldo;
-      saldoAtualEl.textContent = `R$ ${saldoAtual.toFixed(2)}`;
+    } else if (data && data.saldo) {
+      // tentar converter se for string
+      saldoAtual = parseFloat(data.saldo) || 0;
     }
+    saldoAtualEl.textContent = `R$ ${saldoAtual.toFixed(2)}`;
   } catch (error) {
     console.error('Erro ao buscar saldo:', error);
-    saldoAtualEl.textContent = `R$ 0,00`;
+    saldoAtual = 0;
+    saldoAtualEl.textContent = 'R$ 0,00';
   }
 
   function atualizarValor(valor) {
-    valor = parseFloat(valor) || 0;
-    valorSelecionado = valor;
-    const bonus = valor * 0.10;
-    const valorComBonus = valor + bonus;
-    const saldoFinal = saldoAtual + valorComBonus;
+    // Garantir que valor seja número
+    const valorNum = parseFloat(valor);
+    if (isNaN(valorNum)) return;
 
-    valorExibido.textContent = `R$ ${valor.toFixed(2)}`;
-    bonusExibido.textContent = `Bônus de 10%: R$ ${bonus.toFixed(2)}`;
-    saldoApos.textContent = `R$ ${saldoFinal.toFixed(2)}`;
-    infoBonus.textContent = `+ R$ ${valor.toFixed(2)} + R$ ${bonus.toFixed(2)} bônus`;
+    const bonus = valorNum * 0.10;
+    const valorComBonus = valorNum + bonus;
+    // Garantir que saldoAtual seja número
+    const saldoAtualNum = typeof saldoAtual === 'number' ? saldoAtual : 0;
+    const saldoFinal = saldoAtualNum + valorComBonus;
+
+    if (valorExibido) valorExibido.textContent = `R$ ${valorNum.toFixed(2)}`;
+    if (bonusExibido) bonusExibido.textContent = `Bônus de 10%: R$ ${bonus.toFixed(2)}`;
+    if (saldoApos) saldoApos.textContent = `R$ ${saldoFinal.toFixed(2)}`;
+    if (infoBonus) infoBonus.textContent = `+ R$ ${valorNum.toFixed(2)} + R$ ${bonus.toFixed(2)} bônus`;
 
     botoesRapidos.forEach(btn => {
       btn.classList.remove('selecionado');
-      if (parseFloat(btn.dataset.valor) === valor) {
-        btn.classList.add('selecionado');
-      }
+      const btnValor = parseFloat(btn.dataset.valor);
+      if (btnValor === valorNum) btn.classList.add('selecionado');
     });
 
-    if (parseFloat(slider.value) !== valor) {
-      slider.value = valor;
-    }
+    if (slider && parseFloat(slider.value) !== valorNum) slider.value = valorNum;
   }
 
-  slider.addEventListener('input', function() {
-    atualizarValor(this.value);
-  });
+  if (slider) {
+    slider.addEventListener('input', function() {
+      atualizarValor(this.value);
+    });
+  }
 
   botoesRapidos.forEach(btn => {
     btn.addEventListener('click', function() {
@@ -86,10 +99,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
+  // Inicializa com valor padrão
   atualizarValor(108);
 
-  // Funções de controle de etapas
   function mostrarEtapa(etapa) {
+    if (!etapa1 || !etapa2 || !etapa3 || !indicadores[1] || !indicadores[2] || !indicadores[3]) return;
+
     etapa1.style.display = 'none';
     etapa2.classList.remove('visivel');
     etapa3.classList.remove('visivel');
@@ -116,11 +131,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   btnContinuar.addEventListener('click', function() {
     const valor = parseFloat(slider.value);
-    if (valor < 20 || valor > 200) {
+    if (isNaN(valor) || valor < 20 || valor > 200) {
       alert('Valor fora do limite permitido.');
       return;
     }
-    document.getElementById('valor-confirmacao').textContent = `R$ ${valor.toFixed(2)}`;
+    if (valorConfirmacao) valorConfirmacao.textContent = `R$ ${valor.toFixed(2)}`;
     mostrarEtapa(2);
   });
 
@@ -130,6 +145,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   btnConfirmarPix.addEventListener('click', async function() {
     const valor = parseFloat(slider.value);
+    if (isNaN(valor) || valor < 20 || valor > 200) {
+      alert('Valor inválido.');
+      return;
+    }
+    if (!loadingOverlay || !qrContainer) return;
 
     loadingOverlay.classList.add('ativo');
 
@@ -141,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           userId,
           amount: valor,
           payerName: usuario.nome || 'Cliente GDK',
-          payerDocument: '00000000000', // CPF fictício
+          payerDocument: '00000000000',
           description: `Recarga GDK - ${usuario.email}`
         })
       });
@@ -150,7 +170,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       loadingOverlay.classList.remove('ativo');
 
       if (data.success) {
-        const qrContainer = document.getElementById('qr-container');
         qrContainer.innerHTML = `
           <h2 style="margin-bottom:1.5rem;">Pagamento PIX</h2>
           <img src="${data.qrCodeBase64}" class="qr-code-img">
