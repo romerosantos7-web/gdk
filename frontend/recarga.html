@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GDK · Recarregar Saldo</title>
-    <!-- Fonte Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- CSS principal -->
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Estilos específicos da página de recarga */
+        /* Estilos específicos da recarga */
         .recarga-container {
             max-width: 700px;
             margin: 2rem auto;
@@ -21,18 +18,6 @@
             background: #111;
             border: 1px solid #333;
             border-radius: 40px;
-            box-shadow: 0 20px 40px -15px #000;
-        }
-        .recarga-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .recarga-header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #ffffff, #cccccc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
         .etapas {
             display: flex;
@@ -45,8 +30,8 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            border-radius: 30px;
             background: #1a1a1a;
+            border-radius: 30px;
         }
         .etapa.ativa {
             background: #fff;
@@ -75,21 +60,41 @@
         }
         #etapa2, #etapa3 {
             display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
         #etapa2.visivel, #etapa3.visivel {
             display: block;
-            opacity: 1;
+        }
+        .slider {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 10px;
+        }
+        .botoes-rapidos {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .btn-valor-rapido {
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 0.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .btn-valor-rapido.selecionado {
+            background: #fff;
+            color: #000;
         }
         .btn-continuar, .btn-confirmar {
             width: 100%;
             padding: 1.2rem;
             border-radius: 60px;
             font-weight: 700;
-            font-size: 1.2rem;
-            cursor: pointer;
             border: none;
+            cursor: pointer;
         }
         .btn-continuar {
             background: #fff;
@@ -152,22 +157,20 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @media (max-width: 600px) {
             .saldo-cards { flex-direction: column; }
+            .botoes-rapidos { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
 <body>
-    <header class="header"><!-- ... --></header>
+    <header class="header"><!-- seu header padrão --></header>
     <main>
         <div class="recarga-container">
-            <div class="recarga-header">
-                <h1><i class="fas fa-coins"></i> Recarregar Saldo</h1>
-                <p>Siga os passos abaixo</p>
-            </div>
+            <h1 class="recarga-header">Recarregar Saldo</h1>
             <div class="etapas">
                 <div class="etapa ativa" id="etapa-ind1"><i class="fas fa-check-circle"></i> 1. Valor</div>
-                <span class="separador">→</span>
+                <span>→</span>
                 <div class="etapa" id="etapa-ind2">2. Pagamento</div>
-                <span class="separador">→</span>
+                <span>→</span>
                 <div class="etapa" id="etapa-ind3">3. QR Code</div>
             </div>
             <div class="saldo-cards">
@@ -181,14 +184,13 @@
                     <div id="info-bonus"></div>
                 </div>
             </div>
-            <!-- Etapa 1 -->
+            <!-- Etapa 1: escolha do valor -->
             <div id="etapa1">
-                <div class="valor-selecionado-info">
-                    <span>Valor</span>
-                    <span class="valor" id="valor-exibido">R$ 108,00</span>
-                    <span id="bonus-exibido">Bônus 10%</span>
+                <div style="background:#1a1a1a; padding:1rem; border-radius:30px; margin-bottom:1rem;">
+                    <span>Valor selecionado: <strong id="valor-exibido">R$ 108,00</strong></span>
+                    <span id="bonus-exibido">(bônus 10%)</span>
                 </div>
-                <input type="range" id="valor-slider" min="20" max="200" value="108" step="1" class="slider">
+                <input type="range" id="valor-slider" class="slider" min="20" max="200" value="108" step="1">
                 <div class="botoes-rapidos">
                     <button class="btn-valor-rapido" data-valor="20">20</button>
                     <button class="btn-valor-rapido" data-valor="50">50</button>
@@ -198,23 +200,23 @@
                 </div>
                 <button class="btn-continuar" id="btn-continuar">Continuar</button>
             </div>
-            <!-- Etapa 2 -->
+            <!-- Etapa 2: confirmar método -->
             <div id="etapa2">
-                <div class="confirmacao-info">
-                    <p>Valor: <span id="valor-confirmacao">R$ 108,00</span></p>
+                <div style="background:#1a1a1a; padding:1.5rem; border-radius:30px; text-align:center;">
+                    <p>Valor: <strong id="valor-confirmacao">R$ 108,00</strong></p>
                     <p>+10% bônus</p>
                 </div>
                 <button class="btn-confirmar" id="btn-confirmar-pix">Confirmar PIX</button>
                 <button class="btn-voltar" id="btn-voltar-etapa1">Voltar</button>
             </div>
-            <!-- Etapa 3 -->
+            <!-- Etapa 3: QR Code -->
             <div id="etapa3">
-                <div id="qr-container"></div>
+                <div id="qr-container" style="text-align:center;"></div>
                 <button class="btn-voltar" id="btn-fechar-qr">Fechar</button>
             </div>
         </div>
     </main>
-    <footer class="footer"><!-- ... --></footer>
+    <footer class="footer"><!-- seu footer padrão --></footer>
     <div class="loading-overlay" id="loading-overlay"><div class="spinner"></div></div>
     <script src="scripts/script.js"></script>
     <script src="scripts/recarga.js"></script>
