@@ -453,6 +453,44 @@
     display: block;
     margin: 0 auto 1rem;
 }
+
+        /* Garante que as etapas ocultas não ocupem espaço */
+#etapa1, #etapa2, #etapa3 {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    margin: 0;
+    padding: 0;
+    height: auto;
+    min-height: 0;
+}
+
+#etapa1[style*="display: block"], 
+#etapa2.visivel, 
+#etapa3.visivel {
+    display: block !important;
+    opacity: 1;
+}
+
+/* Ajustes para o QR Code */
+#etapa3 .qr-container {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+#etapa3 .qr-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 1rem;
+}
+
+/* Remove qualquer espaçamento extra da etapa3 */
+#etapa3 {
+    margin: 0;
+    padding: 0;
+}
     </style>
 </head>
 <body>
@@ -627,4 +665,5 @@
     <script src="scripts/recarga.js"></script>
 </body>
 </html>
+
 
