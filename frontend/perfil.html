@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDK · Meu Perfil</title>
+    <!-- Fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Fundo com efeito de gradiente e partículas */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 0%, transparent 30%),
+                        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .profile-container {
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cabeçalho do perfil */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            box-shadow: 0 20px 40px -15px #000;
+        }
+
+        .profile-avatar {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #fff;
+            box-shadow: 0 0 30px rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #2a2a2a;
+        }
+
+        .profile-avatar .avatar-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-avatar:hover .avatar-overlay {
+            opacity: 1;
+        }
+
+        .avatar-overlay i {
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .profile-info h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .profile-info .profile-email {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #aaa;
+            font-size: 1rem;
+        }
+
+        .profile-info .profile-email i {
+            color: #00cc88;
+        }
+
+        .profile-badge {
+            margin-top: 1rem;
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(0, 204, 136, 0.1);
+            border: 1px solid #00cc88;
+            border-radius: 30px;
+            color: #00cc88;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Cards de estatísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 1.8rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.03), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px -10px #000;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card .stat-label {
+            color: #aaa;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-sub {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-card.highlight {
+            background: linear-gradient(145deg, #1a1a1a, #222);
+            border-color: #00cc88;
+        }
+
+        .stat-card.highlight .stat-value {
+            color: #00cc88;
+        }
+
+        /* Seção de histórico */
+        .history-section {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .section-header h2 i {
+            color: #00cc88;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            background: #222;
+            border: 1px solid #444;
+            color: #aaa;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        .filter-btn.active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        /* Tabela de histórico */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 1rem 0.5rem;
+            color: #aaa;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .history-table td {
+            padding: 1rem 0.5rem;
+            color: #fff;
+            border-bottom: 1px solid #222;
+        }
+
+        .history-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history-table .transaction-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .type-compra {
+            background: rgba(0, 204, 136, 0.1);
+            color: #00cc88;
+            border: 1px solid #00cc88;
+        }
+
+        .type-recarga {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .transaction-value {
+            font-weight: 600;
+            color: #00cc88;
+        }
+
+        .transaction-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+        }
+
+        .status-concluido {
+            background: rgba(0, 204, 136, 0.1);
+            color: #00cc88;
+            border: 1px solid #00cc88;
+        }
+
+        /* Paginação */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover {
+            background: #333;
+            border-color: #666;
+        }
+
+        .page-btn.active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        /* Loading e estados vazios */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+        }
+
+        /* Botão de voltar flutuante */
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            width: 50px;
+            height: 50px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: #333;
+            transform: scale(1.1);
+            border-color: #fff;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .history-table {
+                font-size: 0.9rem;
+            }
+            
+            .history-table th,
+            .history-table td {
+                padding: 0.8rem 0.3rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-buttons {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            
+            .history-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="catalogo.html" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <div class="profile-container">
+        <!-- Cabeçalho do perfil -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <img src="https://ui-avatars.com/api/?name=GDK&size=120&background=00cc88&color=fff&bold=true&length=1" alt="Avatar padrão">
+                <div class="avatar-overlay">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            <div class="profile-info">
+                <h1 id="user-name">Carregando...</h1>
+                <div class="profile-email">
+                    <i class="fas fa-envelope"></i>
+                    <span id="user-email">carregando@email.com</span>
+                </div>
+                <div class="profile-badge">
+                    <i class="fas fa-shield-alt"></i> Membro desde 2025
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards de estatísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="stat-label">Saldo Disponível</div>
+                <div class="stat-value" id="saldo-disponivel">R$ 0,00</div>
+                <div class="stat-sub">Última atualização: agora</div>
+            </div>
+
+            <div class="stat-card highlight">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-label">Total Gasto</div>
+                <div class="stat-value" id="total-gasto">R$ 0,00</div>
+                <div class="stat-sub">Em todas as compras</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <div class="stat-label">Total de Compras</div>
+                <div class="stat-value" id="total-compras">0</div>
+                <div class="stat-sub">Cartões adquiridos</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-label">Membro Desde</div>
+                <div class="stat-value" id="membro-desde">2025</div>
+                <div class="stat-sub">Cliente GDK</div>
+            </div>
+        </div>
+
+        <!-- Histórico de compras -->
+        <div class="history-section">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-history"></i>
+                    Histórico de Compras
+                </h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Todos</button>
+                    <button class="filter-btn" data-filter="compra">Compras</button>
+                    <button class="filter-btn" data-filter="recarga">Recargas</button>
+                </div>
+            </div>
+
+            <!-- Tabela de histórico -->
+            <div id="history-container">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <!-- Será preenchido via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Loading do histórico -->
+            <div id="history-loading" class="empty-state" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Carregando histórico...</p>
+            </div>
+
+            <!-- Paginação -->
+            <div class="pagination" id="pagination">
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verifica se usuário está logado
+            const usuarioLogado = sessionStorage.getItem('usuarioLogado');
+            if (!usuarioLogado) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const usuario = JSON.parse(usuarioLogado);
+            const userId = usuario.id;
+            const API_URL = 'https://gdk.onrender.com/api';
+
+            // Elementos do DOM
+            const userNameEl = document.getElementById('user-name');
+            const userEmailEl = document.getElementById('user-email');
+            const saldoEl = document.getElementById('saldo-disponivel');
+            const totalGastoEl = document.getElementById('total-gasto');
+            const totalComprasEl = document.getElementById('total-compras');
+            const historyBody = document.getElementById('history-body');
+            const historyLoading = document.getElementById('history-loading');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+
+            // Dados do usuário
+            let saldoAtual = 0;
+            let historico = [];
+
+            // Carrega dados do usuário
+            async function carregarDados() {
+                try {
+                    // Busca saldo
+                    const saldoResponse = await fetch(`${API_URL}/saldo/${userId}`);
+                    const saldoData = await saldoResponse.json();
+                    saldoAtual = saldoData.saldo || 0;
+                    saldoEl.textContent = `R$ ${saldoAtual.toFixed(2)}`;
+
+                    // Nome e email
+                    userNameEl.textContent = usuario.nome || 'Usuário GDK';
+                    userEmailEl.textContent = usuario.email;
+
+                    // Simula histórico de compras (substituir por chamada real à API)
+                    await carregarHistorico();
+
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                }
+            }
+
+            // Simula carregamento de histórico (substituir por API real)
+            async function carregarHistorico() {
+                historyLoading.style.display = 'flex';
+                historyBody.innerHTML = '';
+
+                // Simula delay de rede
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Dados simulados
+                historico = [
+                    { id: 1, data: '25/02/2025', tipo: 'compra', descricao: 'Cartão Infinite Bradesco', valor: 70.00, status: 'concluido' },
+                    { id: 2, data: '24/02/2025', tipo: 'recarga', descricao: 'Recarga de saldo', valor: 108.00, status: 'concluido' },
+                    { id: 3, data: '23/02/2025', tipo: 'compra', descricao: 'Cartão Black Itaú', valor: 65.00, status: 'concluido' },
+                    { id: 4, data: '22/02/2025', tipo: 'compra', descricao: 'Cartão Infinite BB', valor: 70.00, status: 'concluido' },
+                    { id: 5, data: '21/02/2025', tipo: 'recarga', descricao: 'Recarga de saldo', valor: 50.00, status: 'concluido' },
+                ];
+
+                // Calcula totais
+                const totalGasto = historico
+                    .filter(item => item.tipo === 'compra')
+                    .reduce((acc, item) => acc + item.valor, 0);
+                
+                const totalCompras = historico.filter(item => item.tipo === 'compra').length;
+
+                totalGastoEl.textContent = `R$ ${totalGasto.toFixed(2)}`;
+                totalComprasEl.textContent = totalCompras;
+
+                renderizarHistorico('all');
+            }
+
+            function renderizarHistorico(filtro) {
+                const dadosFiltrados = filtro === 'all' 
+                    ? historico 
+                    : historico.filter(item => item.tipo === filtro);
+
+                historyLoading.style.display = 'none';
+
+                if (dadosFiltrados.length === 0) {
+                    historyBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 3rem; color: #666;">
+                                <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                                Nenhum registro encontrado
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                historyBody.innerHTML = dadosFiltrados.map(item => `
+                    <tr>
+                        <td>${item.data}</td>
+                        <td>
+                            <span class="transaction-type type-${item.tipo}">
+                                <i class="fas ${item.tipo === 'compra' ? 'fa-credit-card' : 'fa-coins'}"></i>
+                                ${item.tipo === 'compra' ? 'Compra' : 'Recarga'}
+                            </span>
+                        </td>
+                        <td>${item.descricao}</td>
+                        <td class="transaction-value">R$ ${item.valor.toFixed(2)}</td>
+                        <td>
+                            <span class="transaction-status status-concluido">
+                                <i class="fas fa-check-circle"></i> Concluído
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Eventos dos filtros
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    renderizarHistorico(this.dataset.filter);
+                });
+            });
+
+            // Eventos da paginação
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.textContent === '...') return;
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    // Aqui você implementaria a paginação real
+                });
+            });
+
+            // Carrega tudo
+            await carregarDados();
+        });
+    </script>
+</body>
+</html>
