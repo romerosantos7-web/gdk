@@ -231,3 +231,54 @@ app.post('/api/webhook/misticpay', async (req, res) => {
   res.sendStatus(200);
 });
 
+// ===== ROTAS PARA O PERFIL =====
+
+// Buscar dados completos do usuário
+app.get('/api/usuario/:id', (req, res) => {
+    const userId = parseInt(req.params.id);
+    const db = readDB();
+    const usuario = db.usuarios.find(u => u.id === userId);
+    
+    if (usuario) {
+        // Não retorna a senha
+        const { senha, ...usuarioSemSenha } = usuario;
+        res.json(usuarioSemSenha);
+    } else {
+        res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+});
+
+// Buscar histórico de transações do usuário
+app.get('/api/historico/:id', (req, res) => {
+    const userId = parseInt(req.params.id);
+    const db = readDB();
+    
+    // Se você tiver uma coleção de transações no db.json
+    const transacoes = db.transacoes?.filter(t => t.usuarioId === userId) || [];
+    
+    res.json({ transacoes });
+});
+
+// Registrar nova transação (para quando fizer compras/recargas)
+app.post('/api/transacoes', (req, res) => {
+    const { usuarioId, tipo, descricao, valor, metodo } = req.body;
+    const db = readDB();
+    
+    const novaTransacao = {
+        id: Date.now(),
+        usuarioId,
+        data: new Date().toISOString(),
+        tipo,
+        descricao,
+        valor,
+        status: 'concluido',
+        metodo
+    };
+    
+    if (!db.transacoes) db.transacoes = [];
+    db.transacoes.push(novaTransacao);
+    writeDB(db);
+    
+    res.json({ success: true, transacao: novaTransacao });
+});
+
