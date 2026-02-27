@@ -5,14 +5,20 @@
       "nome": "Admin",
       "email": "admin@gdk.com",
       "senha": "123456",
-      "saldo": "34.51"
-    },
+      "saldo": 34.51,
+      "criadoEm": "2025-01-15T10:00:00.000Z"
+    }
+  ],
+  "transacoes": [
     {
-      "id": 2,
-      "nome": "teste",
-      "email": "teste@gmail.com",
-      "senha": "romerox333",
-      "saldo": "34.51"
+      "id": 1,
+      "usuarioId": 1,
+      "data": "2025-02-25T14:30:00.000Z",
+      "tipo": "compra",
+      "descricao": "Cartão Infinite Bradesco",
+      "valor": 70.00,
+      "status": "concluido",
+      "metodo": "Saldo"
     }
   ]
 }
