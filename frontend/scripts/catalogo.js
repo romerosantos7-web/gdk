@@ -120,3 +120,53 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     configurarEventos();
 });
+
+// Função para comprar cartão
+async function comprarCartao(cardId, preco, descricao) {
+    const usuarioLogado = sessionStorage.getItem('usuarioLogado');
+    if (!usuarioLogado) {
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    const usuario = JSON.parse(usuarioLogado);
+    const API_URL = 'https://gdk.onrender.com/api';
+    
+    // Mostra loading (opcional)
+    const loading = document.createElement('div');
+    loading.className = 'loading-overlay';
+    loading.innerHTML = '<div class="spinner"></div><p>Processando compra...</p>';
+    document.body.appendChild(loading);
+    
+    try {
+        const response = await fetch(`${API_URL}/comprar-cartao`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                usuarioId: usuario.id,
+                cartaoId: cardId,
+                valor: preco,
+                descricao: descricao
+            })
+        });
+        
+        const data = await response.json();
+        loading.remove();
+        
+        if (data.success) {
+            // Atualiza o saldo no sessionStorage
+            usuario.saldo = data.novoSaldo;
+            sessionStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+            
+            alert(`✅ Compra realizada! Novo saldo: R$ ${data.novoSaldo.toFixed(2)}`);
+            
+            // Opcional: redireciona ou atualiza a página
+            // window.location.reload();
+        } else {
+            alert('❌ Erro: ' + (data.error || 'Saldo insuficiente'));
+        }
+    } catch (error) {
+        loading.remove();
+        alert('Erro de conexão com o servidor');
+    }
+}
