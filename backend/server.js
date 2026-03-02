@@ -278,6 +278,52 @@ app.post('/api/transacoes', (req, res) => {
     if (!db.transacoes) db.transacoes = [];
     db.transacoes.push(novaTransacao);
     writeDB(db);
+
+  // ===== ROTA DE COMPRA DE CARTÃO =====
+app.post('/api/comprar-cartao', (req, res) => {
+    const { usuarioId, cartaoId, valor, descricao } = req.body;
+    const db = readDB();
+    
+    // Busca o usuário
+    const usuario = db.usuarios.find(u => u.id === usuarioId);
+    if (!usuario) {
+        return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+    
+    // Verifica saldo
+    if (usuario.saldo < valor) {
+        return res.status(400).json({ error: 'Saldo insuficiente' });
+    }
+    
+    // Debita o saldo
+    usuario.saldo -= valor;
+    
+    // Registra a transação
+    const novaTransacao = {
+        id: Date.now(),
+        usuarioId,
+        data: new Date().toISOString(),
+        tipo: 'compra',
+        descricao: descricao || 'Compra de cartão',
+        valor: valor,
+        status: 'concluido',
+        metodo: 'Saldo',
+        cartaoId: cartaoId
+    };
+    
+    if (!db.transacoes) db.transacoes = [];
+    db.transacoes.push(novaTransacao);
+    
+    // Salva no banco
+    writeDB(db);
+    
+    res.json({ 
+        success: true, 
+        message: 'Compra realizada com sucesso',
+        novoSaldo: usuario.saldo,
+        transacao: novaTransacao
+    });
+});
     
     res.json({ success: true, transacao: novaTransacao });
 });
