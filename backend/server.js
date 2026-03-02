@@ -231,6 +231,36 @@ app.post('/api/webhook/misticpay', async (req, res) => {
   res.sendStatus(200);
 });
 
+// Dentro do if (webhookData.transactionType === 'DEPOSITO' && webhookData.status === 'COMPLETO')
+if (usuario) {
+    const valorEmReais = amount;
+    const bonus = valorEmReais * 0.10;
+    const totalAdicionado = valorEmReais + bonus;
+    usuario.saldo = (usuario.saldo || 0) + totalAdicionado;
+    
+    // ===== NOVO: Registrar transação =====
+    const novaTransacao = {
+        id: Date.now(),
+        usuarioId: userId,
+        data: new Date().toISOString(),
+        tipo: 'recarga',
+        descricao: 'Recarga de saldo via PIX',
+        valor: valorEmReais,
+        bonus: bonus,
+        total: totalAdicionado,
+        status: 'concluido',
+        metodo: 'PIX',
+        transactionId: webhookData.transactionId
+    };
+    
+    if (!db.transacoes) db.transacoes = [];
+    db.transacoes.push(novaTransacao);
+    // ====================================
+    
+    writeDB(db);
+    console.log(`✅ Saldo atualizado para usuário ${userId}: +R$ ${totalAdicionado.toFixed(2)}`);
+}
+
 // ===== ROTAS PARA O PERFIL =====
 
 // Buscar dados completos do usuário
