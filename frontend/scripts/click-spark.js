@@ -1,4 +1,3 @@
-// click-spark.js - Efeito de partículas ao clicar (versão HTML puro)
 class ClickSpark {
     constructor(options = {}) {
         this.options = {
