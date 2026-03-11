@@ -184,3 +184,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// ===== EFEITO DE CLIQUE COM PARTÍCULAS =====
+class ClickSpark {
+    // ... (cole toda a classe aqui)
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.clickSpark = new ClickSpark({
+        sparkColor: '#ffffff',
+        sparkSize: 8,
+        sparkRadius: 30,
+        sparkCount: 8,
+        duration: 500,
+        easing: 'ease-out',
+        extraScale: 1.2
+    });
+});
